@@ -33,53 +33,59 @@ window.addEventListener('load', function () {
 			context.save();
 			context.stroke();
 			context.restore();
-			// context.beginPath();
-			if (this.game.queue.length) {
-				context.moveTo(this.CX, this.CY);
-				// context.lineTo(this.game.mouse.x, this.game.mouse.y);
-				// context.lineTo(this.game.queue[i][0], this.game.queue[i][1]);
-				// context.stroke();
-				for (let i = 0; i < this.game.queue.length; i++) {
-					// context.moveTo(this.game.queue[i][0], this.game.queue[i][1]);
-					context.lineTo(this.game.queue[i][0], this.game.queue[i][1]);
-					context.moveTo(this.game.queue[i][0], this.game.queue[i][1]);
-					// context.moveTo(this.game.queue[i][0], this.game.queue[i + 1][1]);
-					context.stroke();
-				}
-			}
-
-
-			// context.moveTo(this.game.queue[i],this.game.queue[i + 1]);
-			// context.beginPath();
-			// context.moveTo(500, 800);
-			// context.moveTo(this.CX, this.CY);
+			context.moveTo(this.CX, this.CY);
+				context.lineTo(this.game.mouse.x, this.game.mouse.y);
+				context.stroke();
+			// if (this.game.queue.length) {
+			// 	context.moveTo(this.CX, this.CY);
+			// 	context.lineTo(this.game.mouse.x, this.game.mouse.y);
+			// 	context.stroke();
+				// for (let i = 0; i < this.game.queue.length; i++) {
+				// 	// context.moveTo(this.game.queue[i][0], this.game.queue[i][1]);
+				// 	context.lineTo(this.game.queue[i][0], this.game.queue[i][1]);
+				// 	context.moveTo(this.game.queue[i][0], this.game.queue[i][1]);
+				// 	// context.moveTo(this.game.queue[i][0], this.game.queue[i + 1][1]);
+				// 	context.stroke();
+				// }
+			// }
 		}
 		update() {
-			if (this.game.queue.length) {
-				this.dx = this.game.queue[0][0] - this.CX;
-				this.dy = this.game.queue[0][1] - this.CY;
+				this.dx = this.game.mouse.x - this.CX;
+				this.dy = this.game.mouse.y - this.CY;
 				const distance = Math.hypot(this.dy, this.dx);
-				// this.dx = this.game.mouse.x - this.CX;
-				// this.dy = this.game.mouse.y - this.CY;
-				// const distance = Math.hypot(this.dy, this.dx);
 				this.speedX = this.dx / distance || 0;
 				this.speedY = this.dy / distance || 0;
 				if (distance > this.speedModifier) {
-					
 					this.CX += this.speedX * this.speedModifier;
 					this.CY += this.speedY * this.speedModifier;
 				}  else {
-					console.log(this.game.queue);
-					this.game.queue.shift();
 					this.speedX = 0;
 					this.speedY = 0;
 				}
 
 			}
+			// if (this.game.queue.length) {
+			// 	this.dx = this.game.queue[0][0] - this.CX;
+			// 	this.dy = this.game.queue[0][1] - this.CY;
+			// 	const distance = Math.hypot(this.dy, this.dx);
+			// 	// this.dx = this.game.mouse.x - this.CX;
+			// 	// this.dy = this.game.mouse.y - this.CY;
+			// 	// const distance = Math.hypot(this.dy, this.dx);
+			// 	this.speedX = this.dx / distance || 0;
+			// 	this.speedY = this.dy / distance || 0;
+			// 	if (distance > this.speedModifier) {
+					
+			// 		this.CX += this.speedX * this.speedModifier;
+			// 		this.CY += this.speedY * this.speedModifier;
+			// 	}  else {
+			// 		console.log(this.game.queue);
+			// 		this.game.queue.shift();
+			// 		this.speedX = 0;
+			// 		this.speedY = 0;
+			// 	}
 
-
-
-		}
+			// }
+		// }
 	}
 	class Game {
 		/** @param {HTMLCanvasElement} canvas */
@@ -91,8 +97,8 @@ window.addEventListener('load', function () {
 			this.queue = [];
 			// get canvas offset click.
 			this.mouse = {
-				x: this.width,
-				y: this.height,
+				x: this.width / 2,
+				y: this.height / 2,
 				pressed: false
 			}
 			/** @param {MouseEvent} e */
@@ -105,8 +111,8 @@ window.addEventListener('load', function () {
 			canvas.addEventListener('mouseup', (e) => {
 				this.mouse.x = e.offsetX;
 				this.mouse.y = e.offsetY;
-				this.queue.push([e.offsetX, e.offsetY]);
-				console.log(this.queue);
+				// this.queue.push([e.offsetX, e.offsetY]);
+				// console.log(this.queue);
 				this.mouse.pressed = false;
 			});
 			/** @param {MouseEvent} e */
