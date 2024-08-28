@@ -9,14 +9,26 @@ window.addEventListener('load', function () {
 	ctx.strokeStyle = 'white';
 
 
-
+	class Obstacle {
+		constructor(game) {
+			this.game = game;
+			this.CX = Math.random() * this.game.width;
+			this.CY = Math.random() * this.game.height;
+			this.CR = 60;
+		}
+		draw(context) {
+			context.beginPath();
+			context.arc(this.CX, this.CY, this.CR, 0, Math.PI * 2);
+			context.save();
+			context.stroke();
+			context.restore();
+		}
+	}
 	class Player {
 		constructor(game) {
 			this.game = game;
 			this.CX = this.game.width * 0.5;
 			this.CY = this.game.height * 0.5;
-			this.CXList = [this.game.width * 0.5];
-			this.CYList = [this.game.height * 0.5];
 			this.CR = 30;
 			this.speedX = 0;
 			this.speedY = 0;
@@ -34,57 +46,57 @@ window.addEventListener('load', function () {
 			context.stroke();
 			context.restore();
 			context.moveTo(this.CX, this.CY);
-				context.lineTo(this.game.mouse.x, this.game.mouse.y);
-				context.stroke();
+			context.lineTo(this.game.mouse.x, this.game.mouse.y);
+			context.stroke();
 			// if (this.game.queue.length) {
 			// 	context.moveTo(this.CX, this.CY);
 			// 	context.lineTo(this.game.mouse.x, this.game.mouse.y);
 			// 	context.stroke();
-				// for (let i = 0; i < this.game.queue.length; i++) {
-				// 	// context.moveTo(this.game.queue[i][0], this.game.queue[i][1]);
-				// 	context.lineTo(this.game.queue[i][0], this.game.queue[i][1]);
-				// 	context.moveTo(this.game.queue[i][0], this.game.queue[i][1]);
-				// 	// context.moveTo(this.game.queue[i][0], this.game.queue[i + 1][1]);
-				// 	context.stroke();
-				// }
+			// for (let i = 0; i < this.game.queue.length; i++) {
+			// 	// context.moveTo(this.game.queue[i][0], this.game.queue[i][1]);
+			// 	context.lineTo(this.game.queue[i][0], this.game.queue[i][1]);
+			// 	context.moveTo(this.game.queue[i][0], this.game.queue[i][1]);
+			// 	// context.moveTo(this.game.queue[i][0], this.game.queue[i + 1][1]);
+			// 	context.stroke();
+			// }
 			// }
 		}
 		update() {
-				this.dx = this.game.mouse.x - this.CX;
-				this.dy = this.game.mouse.y - this.CY;
-				const distance = Math.hypot(this.dy, this.dx);
-				this.speedX = this.dx / distance || 0;
-				this.speedY = this.dy / distance || 0;
-				if (distance > this.speedModifier) {
-					this.CX += this.speedX * this.speedModifier;
-					this.CY += this.speedY * this.speedModifier;
-				}  else {
-					this.speedX = 0;
-					this.speedY = 0;
-				}
-
+			this.dx = this.game.mouse.x - this.CX;
+			this.dy = this.game.mouse.y - this.CY;
+			const distance = Math.hypot(this.dy, this.dx);
+			this.speedX = this.dx / distance || 0;
+			this.speedY = this.dy / distance || 0;
+			if(distance > this.speedModifier) {
+				this.CX += this.speedX * this.speedModifier;
+				this.CY += this.speedY * this.speedModifier;
+			} else {
+				this.speedX = 0;
+				this.speedY = 0;
 			}
-			// if (this.game.queue.length) {
-			// 	this.dx = this.game.queue[0][0] - this.CX;
-			// 	this.dy = this.game.queue[0][1] - this.CY;
-			// 	const distance = Math.hypot(this.dy, this.dx);
-			// 	// this.dx = this.game.mouse.x - this.CX;
-			// 	// this.dy = this.game.mouse.y - this.CY;
-			// 	// const distance = Math.hypot(this.dy, this.dx);
-			// 	this.speedX = this.dx / distance || 0;
-			// 	this.speedY = this.dy / distance || 0;
-			// 	if (distance > this.speedModifier) {
-					
-			// 		this.CX += this.speedX * this.speedModifier;
-			// 		this.CY += this.speedY * this.speedModifier;
-			// 	}  else {
-			// 		console.log(this.game.queue);
-			// 		this.game.queue.shift();
-			// 		this.speedX = 0;
-			// 		this.speedY = 0;
-			// 	}
 
-			// }
+		}
+		// if (this.game.queue.length) {
+		// 	this.dx = this.game.queue[0][0] - this.CX;
+		// 	this.dy = this.game.queue[0][1] - this.CY;
+		// 	const distance = Math.hypot(this.dy, this.dx);
+		// 	// this.dx = this.game.mouse.x - this.CX;
+		// 	// this.dy = this.game.mouse.y - this.CY;
+		// 	// const distance = Math.hypot(this.dy, this.dx);
+		// 	this.speedX = this.dx / distance || 0;
+		// 	this.speedY = this.dy / distance || 0;
+		// 	if (distance > this.speedModifier) {
+
+		// 		this.CX += this.speedX * this.speedModifier;
+		// 		this.CY += this.speedY * this.speedModifier;
+		// 	}  else {
+		// 		console.log(this.game.queue);
+		// 		this.game.queue.shift();
+		// 		this.speedX = 0;
+		// 		this.speedY = 0;
+		// 	}
+
+		// }
 		// }
 	}
 	class Game {
@@ -101,6 +113,8 @@ window.addEventListener('load', function () {
 				y: this.height / 2,
 				pressed: false
 			}
+			this.obstacles = [];
+			this.numberObstacles = 5;
 			/** @param {MouseEvent} e */
 			canvas.addEventListener('mousedown', (e) => {
 				this.mouse.x = e.offsetX;
@@ -117,7 +131,7 @@ window.addEventListener('load', function () {
 			});
 			/** @param {MouseEvent} e */
 			canvas.addEventListener('mousemove', (e) => {
-				if (this.mouse.pressed) {
+				if(this.mouse.pressed) {
 					this.mouse.x = e.offsetX;
 					this.mouse.y = e.offsetY;
 				}
@@ -130,14 +144,42 @@ window.addEventListener('load', function () {
 		render(context) {
 			this.player.draw(context);
 			this.player.update();
+			this.obstacles.forEach((o) => {
+				o.draw(context);
+			})
+		}
+		init() {
+			let attempts = 0;
+			let overlap = false;
+			while(this.obstacles.length < this.numberObstacles && attempts < 500) {
+				let testObstacle = new Obstacle(this);
+				this.obstacles.forEach(o => {
+					const dx = testObstacle.CX - o.CX;
+					const dy = testObstacle.CY - o.CY;
+					const distance = Math.hypot(this.dy, this.dx);
+					const sumOfRadii = testObstacle.CR + o.CR;
+					if(distance < sumOfRadii) {
+						overlap = true;
+					}
+					if(!overlap) {
+						this.obstacles.push(testObstacle);
+					}
+				})
+				attempts++;
+			}
+			for(let i = 0; i < this.numberObstacles; i++) {
+				this.obstacles.push(new Obstacle(this));
+
+			}
 		}
 	}
 	const game = new Game(canvas);
-
+	game.init();
 	function animate() {
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		game.render(ctx);
 		requestAnimationFrame(animate);
 	}
+
 	animate();
 });
