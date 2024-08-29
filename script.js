@@ -14,9 +14,21 @@ window.addEventListener('load', function () {
 			this.game = game;
 			this.CX = Math.random() * this.game.width;
 			this.CY = Math.random() * this.game.height;
-			this.CR = 60;
+			this.CR = 50;
+			this.image = document.getElementById('obstacles');
+			this.spriteW = 250;
+			this.spriteH = 250;
+
+			this.width = 250;
+			this.height = 250;
+			this.spriteX = this.CX - this.width * 0.5;
+			this.spriteY = this.CY - this.height * 0.5 - 70;
 		}
+		/**
+		 * @param {OffscreenCanvasRenderingContext2D} context
+		 */
 		draw(context) {
+			context.drawImage(this.image, 0, 0, this.spriteW, this.spriteH, this.spriteX, this.spriteY, this.width, this.height);
 			context.beginPath();
 			context.arc(this.CX, this.CY, this.CR, 0, Math.PI * 2);
 			context.save();
@@ -106,6 +118,7 @@ window.addEventListener('load', function () {
 			this.width = this.canvas.width;
 			this.height = this.canvas.height;
 			this.player = new Player(this);
+			this.backgroundOffset = 230;
 			this.queue = [];
 			// get canvas offset click.
 			this.mouse = {
@@ -114,7 +127,7 @@ window.addEventListener('load', function () {
 				pressed: false
 			}
 			this.obstacles = [];
-			this.numberObstacles = 5;
+			this.numberObstacles = 9;
 			/** @param {MouseEvent} e */
 			canvas.addEventListener('mousedown', (e) => {
 				this.mouse.x = e.offsetX;
@@ -151,26 +164,33 @@ window.addEventListener('load', function () {
 		init() {
 			let attempts = 0;
 			let overlap = false;
-			while(this.obstacles.length < this.numberObstacles && attempts < 500) {
+			// const debugarr = [] 
+			while(this.obstacles.length < this.numberObstacles && attempts < 10000) {
+				// console.log(this.obstacles.length);
+				
 				let testObstacle = new Obstacle(this);
+				// debugarr.push(Math.floor(testObstacle.CX).toString() +"/470::" + Math.floor(testObstacle.CY).toString() + "/330");
 				this.obstacles.forEach(o => {
 					const dx = testObstacle.CX - o.CX;
 					const dy = testObstacle.CY - o.CY;
-					const distance = Math.hypot(this.dy, this.dx);
-					const sumOfRadii = testObstacle.CR + o.CR;
+					const distance = Math.hypot(dy, dx);
+					const distanceBuffer = 10;
+					const sumOfRadii = testObstacle.CR + o.CR + distanceBuffer;
+
 					if(distance < sumOfRadii) {
 						overlap = true;
 					}
-					if(!overlap) {
-						this.obstacles.push(testObstacle);
-					}
-				})
+				});
+				
+				const margin = 10;
+				if(!overlap && testObstacle.spriteX > 0 && testObstacle.spriteX < this.width - testObstacle.width
+					&& testObstacle.CY > this.backgroundOffset + margin && testObstacle.CY < this.height - margin) {
+					this.obstacles.push(testObstacle);
+				}
+
 				attempts++;
 			}
-			for(let i = 0; i < this.numberObstacles; i++) {
-				this.obstacles.push(new Obstacle(this));
-
-			}
+			// console.log(debugarr);
 		}
 	}
 	const game = new Game(canvas);
