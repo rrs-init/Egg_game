@@ -21,6 +21,8 @@ window.addEventListener('load', function () {
 
 			this.width = 250;
 			this.height = 250;
+			this.frameX = Math.floor(Math.random() * 4);
+			this.frameY = Math.floor(Math.random() * 3);
 			this.spriteX = this.CX - this.width * 0.5;
 			this.spriteY = this.CY - this.height * 0.5 - 70;
 		}
@@ -28,7 +30,7 @@ window.addEventListener('load', function () {
 		 * @param {OffscreenCanvasRenderingContext2D} context
 		 */
 		draw(context) {
-			context.drawImage(this.image, 0, 0, this.spriteW, this.spriteH, this.spriteX, this.spriteY, this.width, this.height);
+			context.drawImage(this.image, this.frameX * this.spriteW, this.frameY * this.spriteH, this.spriteW, this.spriteH, this.spriteX, this.spriteY, this.width, this.height);
 			context.beginPath();
 			context.arc(this.CX, this.CY, this.CR, 0, Math.PI * 2);
 			context.save();
@@ -161,6 +163,14 @@ window.addEventListener('load', function () {
 				o.draw(context);
 			})
 		}
+		checkCollision(a, b) {
+			const dx = a.CX - b.CX;
+			const dy = a.CY - b.CY;
+			const distance = Math.hypot(dy, dx);
+			const sumOfRadii = a.CR + b.CR;
+			return (distance < sumOfRadii);
+
+		}
 		init() {
 			let attempts = 0;
 			let overlap = false;
@@ -187,7 +197,6 @@ window.addEventListener('load', function () {
 					&& testObstacle.CY > this.backgroundOffset + margin && testObstacle.CY < this.height - margin) {
 					this.obstacles.push(testObstacle);
 				}
-
 				attempts++;
 			}
 			// console.log(debugarr);
