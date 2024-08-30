@@ -48,7 +48,7 @@ window.addEventListener('load', function () {
 			this.speedY = 0;
 			this.distanceX = 0;
 			this.distanceY = 0;
-			this.speedModifier = 2;
+			this.speedModifier = 4;
 		}
 		/**
 		 * @param {OffscreenCanvasRenderingContext2D} context
@@ -88,6 +88,15 @@ window.addEventListener('load', function () {
 				this.speedX = 0;
 				this.speedY = 0;
 			}
+			this.game.obstacles.forEach(o => {
+				const [collision, distance, sumOfRadii, dx, dy] = this.game.checkCollision(this, o);
+				if(collision) {
+					const x = dx /distance;
+					const y = dy /distance;
+					this.CX = o.CX + (sumOfRadii + 2) * x;
+					this.CY = o.CY + (sumOfRadii + 2) * y;
+				}
+			})
 
 		}
 		// if (this.game.queue.length) {
@@ -168,7 +177,7 @@ window.addEventListener('load', function () {
 			const dy = a.CY - b.CY;
 			const distance = Math.hypot(dy, dx);
 			const sumOfRadii = a.CR + b.CR;
-			return (distance < sumOfRadii);
+			return [(distance < sumOfRadii), distance, sumOfRadii, dx, dy];
 
 		}
 		init() {
