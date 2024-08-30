@@ -31,11 +31,13 @@ window.addEventListener('load', function () {
 		 */
 		draw(context) {
 			context.drawImage(this.image, this.frameX * this.spriteW, this.frameY * this.spriteH, this.spriteW, this.spriteH, this.spriteX, this.spriteY, this.width, this.height);
-			context.beginPath();
-			context.arc(this.CX, this.CY, this.CR, 0, Math.PI * 2);
-			context.save();
-			context.stroke();
-			context.restore();
+			if(this.game.debug) {
+				context.beginPath();
+				context.arc(this.CX, this.CY, this.CR, 0, Math.PI * 2);
+				context.save();
+				context.stroke();
+				context.restore();
+			}
 		}
 	}
 	class Player {
@@ -49,19 +51,33 @@ window.addEventListener('load', function () {
 			this.distanceX = 0;
 			this.distanceY = 0;
 			this.speedModifier = 4;
+			this.spriteW = 255;
+			this.spriteH = 255;
+
+			this.width = 220;
+			this.height = 220;
+			this.frameX = Math.floor(Math.random() * 4);
+			this.frameY = Math.floor(Math.random() * 3);
+			this.spriteX = this.CX - this.width * 0.5;
+			this.spriteY = this.CY - this.height * 0.5 - 70;
+			this.image = document.getElementById('bull');
 		}
 		/**
 		 * @param {OffscreenCanvasRenderingContext2D} context
 		 */
 		draw(context) {
-			context.beginPath();
-			context.arc(this.CX, this.CY, this.CR, 0, Math.PI * 2);
-			context.save();
-			context.stroke();
-			context.restore();
-			context.moveTo(this.CX, this.CY);
-			context.lineTo(this.game.mouse.x, this.game.mouse.y);
-			context.stroke();
+			context.drawImage(this.image, this.frameX * this.spriteW, this.frameY * this.spriteH, this.spriteW, this.spriteH, this.spriteX, this.spriteY, this.width, this.height);
+			if(this.game.debug) {
+				context.beginPath();
+				context.arc(this.CX, this.CY, this.CR, 0, Math.PI * 2);
+				context.save();
+				context.stroke();
+				context.restore();
+				context.moveTo(this.CX, this.CY);
+				context.lineTo(this.game.mouse.x, this.game.mouse.y);
+				context.stroke();
+			}
+			
 			// if (this.game.queue.length) {
 			// 	context.moveTo(this.CX, this.CY);
 			// 	context.lineTo(this.game.mouse.x, this.game.mouse.y);
@@ -76,25 +92,44 @@ window.addEventListener('load', function () {
 			// }
 		}
 		update() {
+
 			this.dx = this.game.mouse.x - this.CX;
 			this.dy = this.game.mouse.y - this.CY;
 			const distance = Math.hypot(this.dy, this.dx);
-			this.speedX = this.dx / distance || 0;
-			this.speedY = this.dy / distance || 0;
+			//sprite angle
+			//annoying Maths to get sprite angle
+			const angle = Math.atan2(this.dy, this.dx);
+			if(angle < -2.74 || angle > 2.74) { this.frameY = 6; }
+			else if(angle < -1.96) { this.frameY = 7 }
+			else if(angle < -1.17) { this.frameY = 0; }
+			else if(angle < -0.39) { this.frameY = 1; }
+			else if(angle < 0.39) { this.frameY = 2; }
+			else if(angle < 1.17) { this.frameY = 3; }
+			else if(angle < 1.96) { this.frameY = 4; }
+			else if(angle < 2.74) { this.frameY = 5; }
+
+
+
+
 			if(distance > this.speedModifier) {
-				this.CX += this.speedX * this.speedModifier;
-				this.CY += this.speedY * this.speedModifier;
+				this.speedX = this.dx / distance || 0;
+				this.speedY = this.dy / distance || 0;
+
 			} else {
 				this.speedX = 0;
 				this.speedY = 0;
 			}
+			this.CX += this.speedX * this.speedModifier;
+			this.CY += this.speedY * this.speedModifier;
+			this.spriteX = this.CX - this.width * 0.5;
+			this.spriteY = this.CY - this.height * 0.5 - 80;
 			this.game.obstacles.forEach(o => {
 				const [collision, distance, sumOfRadii, dx, dy] = this.game.checkCollision(this, o);
 				if(collision) {
-					const x = dx /distance;
-					const y = dy /distance;
-					this.CX = o.CX + (sumOfRadii + 2) * x;
-					this.CY = o.CY + (sumOfRadii + 2) * y;
+					const x = dx / distance;
+					const y = dy / distance;
+					this.CX = o.CX + (sumOfRadii + 1) * x;
+					this.CY = o.CY + (sumOfRadii + 1) * y;
 				}
 			})
 
@@ -129,6 +164,7 @@ window.addEventListener('load', function () {
 			this.width = this.canvas.width;
 			this.height = this.canvas.height;
 			this.player = new Player(this);
+			this.debug = false;
 			this.backgroundOffset = 230;
 			this.queue = [];
 			// get canvas offset click.
@@ -161,6 +197,12 @@ window.addEventListener('load', function () {
 				}
 
 			});
+			/** @param {KeyboardEvent} e */
+			window.addEventListener('keydown', (e) => {
+				console.log('event')
+				if(e.key == 'd') {this.debug = !this.debug;}
+
+			});
 		}
 		/**
 		 * @param {HTMLCanvasElement} context
@@ -186,7 +228,7 @@ window.addEventListener('load', function () {
 			// const debugarr = [] 
 			while(this.obstacles.length < this.numberObstacles && attempts < 10000) {
 				// console.log(this.obstacles.length);
-				
+
 				let testObstacle = new Obstacle(this);
 				// debugarr.push(Math.floor(testObstacle.CX).toString() +"/470::" + Math.floor(testObstacle.CY).toString() + "/330");
 				this.obstacles.forEach(o => {
@@ -200,7 +242,7 @@ window.addEventListener('load', function () {
 						overlap = true;
 					}
 				});
-				
+
 				const margin = 10;
 				if(!overlap && testObstacle.spriteX > 0 && testObstacle.spriteX < this.width - testObstacle.width
 					&& testObstacle.CY > this.backgroundOffset + margin && testObstacle.CY < this.height - margin) {
