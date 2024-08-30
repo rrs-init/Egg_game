@@ -77,7 +77,7 @@ window.addEventListener('load', function () {
 				context.lineTo(this.game.mouse.x, this.game.mouse.y);
 				context.stroke();
 			}
-			
+
 			// if (this.game.queue.length) {
 			// 	context.moveTo(this.CX, this.CY);
 			// 	context.lineTo(this.game.mouse.x, this.game.mouse.y);
@@ -123,6 +123,11 @@ window.addEventListener('load', function () {
 			this.CY += this.speedY * this.speedModifier;
 			this.spriteX = this.CX - this.width * 0.5;
 			this.spriteY = this.CY - this.height * 0.5 - 80;
+			//Top Bottom Left Right Boundries
+			if(this.CX < this.CR) this.CX = this.CR;
+			if(this.CX > this.game.width - this.CR) this.CX = this.game.width - this.CR;
+			if(this.CY > this.game.height - this.CR) this.CY = this.game.height - this.CR;
+			if(this.CY < 260 + this.CR) this.CY = 260 + this.CR;
 			this.game.obstacles.forEach(o => {
 				const [collision, distance, sumOfRadii, dx, dy] = this.game.checkCollision(this, o);
 				if(collision) {
@@ -200,7 +205,7 @@ window.addEventListener('load', function () {
 			/** @param {KeyboardEvent} e */
 			window.addEventListener('keydown', (e) => {
 				console.log('event')
-				if(e.key == 'd') {this.debug = !this.debug;}
+				if(e.key == 'd') { this.debug = !this.debug; }
 
 			});
 		}
@@ -255,11 +260,15 @@ window.addEventListener('load', function () {
 	}
 	const game = new Game(canvas);
 	game.init();
-	function animate() {
+	let lastTime = 0;
+	function animate(timeStamp) {
+		const deltaTime = timeStamp - lastTime;
+		lastTime = timeStamp;
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		game.render(ctx);
+
 		requestAnimationFrame(animate);
 	}
 
-	animate();
+	animate(0);
 });
