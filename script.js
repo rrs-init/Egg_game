@@ -172,6 +172,9 @@ window.addEventListener('load', function () {
 			this.debug = false;
 			this.backgroundOffset = 230;
 			this.queue = [];
+			this.fps = 70;
+			this.timer = 0;
+			this.interval = 1000/this.fps;
 			// get canvas offset click.
 			this.mouse = {
 				x: this.width / 2,
@@ -212,12 +215,18 @@ window.addEventListener('load', function () {
 		/**
 		 * @param {HTMLCanvasElement} context
 		 */
-		render(context) {
-			this.player.draw(context);
-			this.player.update();
-			this.obstacles.forEach((o) => {
-				o.draw(context);
-			})
+		render(context, DT) {
+			if(this.timer > this.interval) {
+				this.timer = 0;
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+				this.player.draw(context);
+				this.player.update();
+				this.obstacles.forEach((o) => {
+					o.draw(context);
+				});
+			}
+			this.timer += DT;
+			
 		}
 		checkCollision(a, b) {
 			const dx = a.CX - b.CX;
@@ -262,10 +271,10 @@ window.addEventListener('load', function () {
 	game.init();
 	let lastTime = 0;
 	function animate(timeStamp) {
-		const deltaTime = timeStamp - lastTime;
+		const DT = timeStamp - lastTime;
 		lastTime = timeStamp;
-		ctx.clearRect(0, 0, canvas.width, canvas.height);
-		game.render(ctx);
+		
+		game.render(ctx, DT);
 
 		requestAnimationFrame(animate);
 	}
