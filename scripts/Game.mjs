@@ -14,6 +14,7 @@ class Game {
 		this.gameTopMargin = 230;
 		this.gameObjects = [];
 		this.queue = [];
+
 		this.fps = 70;
 		this.timer = 0;
 		this.interval = 1000 / this.fps;
@@ -21,7 +22,7 @@ class Game {
 		this.eggInterval = 1000;
 		this.score = 0;
 		this.killed = 0;
-
+		this.particles = [];
 		// get canvas offset click.
 		this.mouse = {
 			x: this.width / 2,
@@ -72,7 +73,7 @@ class Game {
 		if(this.timer > this.interval) {
 			this.timer = 0;
 			context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-			this.gameObjects = [...this.eggs, ...this.obstacles, ...this.enemies, this.player, ...this.larvas];
+			this.gameObjects = [...this.eggs, ...this.obstacles, ...this.enemies, this.player, ...this.larvas, ...this.particles];
 			this.gameObjects.sort((a, b) => {
 				return a.CY - b.CY;
 			});
@@ -109,8 +110,11 @@ class Game {
 			return !egg.delayDelete;
 		});
 
-		this.larvas = this.larvas.filter((L) => {
-			return !L.delayDelete;
+		this.larvas = this.larvas.filter((l) => {
+			return !l.delayDelete;
+		});
+		this.particles = this.particles.filter((p) => {
+			return !p.delayDelete;
 		});
 	}
 	init() {
