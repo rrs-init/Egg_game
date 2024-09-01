@@ -1,4 +1,5 @@
 class Player {
+	/** @param {Game} game */
 	constructor(game) {
 		this.game = game;
 		this.CX = this.game.width * 0.5;
