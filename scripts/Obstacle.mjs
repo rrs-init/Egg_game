@@ -29,6 +29,9 @@ class Obstacle {
 			context.restore();
 		}
 	}
+	update() {
+		//do nothing
+	}
 }
 
 export default Obstacle;
