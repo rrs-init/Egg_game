@@ -31,7 +31,7 @@ class Egg {
 	update() {
 		this.spriteX = this.CX - this.width * 0.5;
 		this.spriteY = this.CY - this.height * 0.5 - 35;
-		let collisionObjects = [this.game.player, ...this.game.obstacles];
+		let collisionObjects = [this.game.player, ...this.game.obstacles, ...this.game.enemies];
 
 		collisionObjects.forEach(obj => {
 			let [collision, distance, sumOfRadii, dx, dy] = this.game.checkCollision(this, obj);
@@ -41,7 +41,7 @@ class Egg {
 				this.CX = obj.CX + (sumOfRadii + 1) * x;
 				this.CY = obj.CY + (sumOfRadii + 1) * y;
 			}
-		})
+		});
 	}
 
 }

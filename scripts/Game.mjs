@@ -1,6 +1,7 @@
 import Player from './PLayer.mjs';
 import Obstacle from './Obstacle.mjs';
 import Egg from './Egg.mjs';
+import Enemy from './Enemy.mjs'
 
 class Game {
 	/** @param {HTMLCanvasElement} canvas */
@@ -30,6 +31,8 @@ class Game {
 
 		this.numberOfEggs = 5;
 		this.eggs = [];
+		this.numberOfEnemies = 3;
+		this.enemies = [];
 		/** @param {MouseEvent} e */
 		canvas.addEventListener('mousedown', (e) => {
 			this.mouse.x = e.offsetX;
@@ -66,7 +69,7 @@ class Game {
 		if(this.timer > this.interval) {
 			this.timer = 0;
 			context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-			this.gameObjects = [...this.eggs, ...this.obstacles, this.player];
+			this.gameObjects = [...this.eggs, ...this.obstacles, ...this.enemies, this.player];
 			this.gameObjects.sort((a, b) => {
 				return a.CY - b.CY;
 			});
@@ -95,6 +98,9 @@ class Game {
 	init() {
 		let attempts = 0;
 		let overlap = false;
+		for(let i = 0; i < this.numberOfEnemies; i++) {
+			this.enemies.push(new Enemy(this));
+		}
 		while(this.obstacles.length < this.numberObstacles && attempts < 10000) {
 			let testObstacle = new Obstacle(this);
 			this.obstacles.forEach(o => {
