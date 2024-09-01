@@ -17,7 +17,7 @@ class Egg {
 		this.spriteX;
 		this.spriteY;
 		this.hatchTimer = 0;
-		this.hatchInterval = 5000;
+		this.hatchInterval = 2000;
 		this.delayDelete = false;
 
 	}
@@ -54,7 +54,7 @@ class Egg {
 	checkHatch(DT) {
 		if(this.hatchTimer > this.hatchInterval) {
 			this.delayDelete = true;
-			this.game.larva.push(new Larva(this.game, this.CX, this.CY));
+			this.game.larvas.push(new Larva(this.game, this.CX, this.CY));
 			this.game.removeGameObject();
 		} else {
 			this.hatchTimer += DT;
