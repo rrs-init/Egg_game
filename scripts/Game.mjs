@@ -18,7 +18,7 @@ class Game {
 		this.timer = 0;
 		this.interval = 1000 / this.fps;
 		this.eggTimer = 0;
-		this.eggInterval = 5000;
+		this.eggInterval = 2000;
 
 		// get canvas offset click.
 		this.mouse = {
@@ -33,6 +33,7 @@ class Game {
 		this.eggs = [];
 		this.numberOfEnemies = 3;
 		this.enemies = [];
+		this.larva = [];
 		/** @param {MouseEvent} e */
 		canvas.addEventListener('mousedown', (e) => {
 			this.mouse.x = e.offsetX;
@@ -69,13 +70,13 @@ class Game {
 		if(this.timer > this.interval) {
 			this.timer = 0;
 			context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-			this.gameObjects = [...this.eggs, ...this.obstacles, ...this.enemies, this.player];
+			this.gameObjects = [...this.eggs, ...this.obstacles, ...this.enemies, this.player, ...this.larva];
 			this.gameObjects.sort((a, b) => {
 				return a.CY - b.CY;
 			});
 			this.gameObjects.forEach(obj => {
 				obj.draw(context);
-				obj.update();
+				obj.update(DT);
 			});
 		}
 		this.timer += DT;
@@ -94,6 +95,11 @@ class Game {
 		const distance = Math.hypot(dy, dx);
 		const sumOfRadii = a.CR + b.CR;
 		return [(distance < sumOfRadii), distance, sumOfRadii, dx, dy];
+	}
+	removeGameObject() {
+		this.eggs = this.eggs.filter((egg) => {
+			return !egg.delayDelete;
+		})
 	}
 	init() {
 		let attempts = 0;

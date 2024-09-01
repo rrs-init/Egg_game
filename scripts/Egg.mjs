@@ -1,3 +1,5 @@
+import Larva from "./Larva.mjs";
+
 class Egg {
 	/** @param {Game} game */
 	constructor(game) {
@@ -14,6 +16,10 @@ class Egg {
 		this.height = this.spriteH;
 		this.spriteX;
 		this.spriteY;
+		this.hatchTimer = 0;
+		this.hatchInterval = 5000;
+		this.delayDelete = false;
+
 	}
 	/**
 	 * @param {OffscreenCanvasRenderingContext2D} context
@@ -26,9 +32,10 @@ class Egg {
 			context.save();
 			context.stroke();
 			context.restore();
+			context.fillText((this.hatchTimer * 0.001).toFixed(0), this.CX, this.CY - 100);
 		}
 	}
-	update() {
+	update(DT) {
 		this.spriteX = this.CX - this.width * 0.5;
 		this.spriteY = this.CY - this.height * 0.5 - 35;
 		let collisionObjects = [this.game.player, ...this.game.obstacles, ...this.game.enemies];
@@ -42,6 +49,16 @@ class Egg {
 				this.CY = obj.CY + (sumOfRadii + 1) * y;
 			}
 		});
+		this.checkHatch(DT);
+	}
+	checkHatch(DT) {
+		if(this.hatchTimer > this.hatchInterval) {
+			this.delayDelete = true;
+			this.game.larva.push(new Larva(this.game, this.CX, this.CY));
+			this.game.removeGameObject();
+		} else {
+			this.hatchTimer += DT;
+		}
 	}
 
 }
