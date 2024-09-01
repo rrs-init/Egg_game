@@ -11,6 +11,7 @@ class Game {
 		this.player = new Player(this);
 		this.debug = false;
 		this.gameTopMargin = 230;
+		this.gameObjects = [];
 		this.queue = [];
 		this.fps = 70;
 		this.timer = 0;
@@ -65,14 +66,13 @@ class Game {
 		if(this.timer > this.interval) {
 			this.timer = 0;
 			context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-			this.player.draw(context);
-			this.player.update();
-			this.obstacles.forEach((o) => {
-				o.draw(context);
+			this.gameObjects = [...this.eggs, ...this.obstacles, this.player];
+			this.gameObjects.sort((a, b) => {
+				return a.CY - b.CY;
 			});
-			this.eggs.forEach(egg => {
-				egg.draw(context);
-				egg.update();
+			this.gameObjects.forEach(obj => {
+				obj.draw(context);
+				obj.update();
 			});
 		}
 		this.timer += DT;
@@ -91,17 +91,12 @@ class Game {
 		const distance = Math.hypot(dy, dx);
 		const sumOfRadii = a.CR + b.CR;
 		return [(distance < sumOfRadii), distance, sumOfRadii, dx, dy];
-
 	}
 	init() {
 		let attempts = 0;
 		let overlap = false;
-		// const debugarr = [] 
 		while(this.obstacles.length < this.numberObstacles && attempts < 10000) {
-			// console.log(this.obstacles.length);
-
 			let testObstacle = new Obstacle(this);
-			// debugarr.push(Math.floor(testObstacle.CX).toString() +"/470::" + Math.floor(testObstacle.CY).toString() + "/330");
 			this.obstacles.forEach(o => {
 				const dx = testObstacle.CX - o.CX;
 				const dy = testObstacle.CY - o.CY;
