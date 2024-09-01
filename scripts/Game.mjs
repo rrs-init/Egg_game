@@ -115,7 +115,7 @@ class Game {
 				}
 			});
 
-			const margin = 10;
+			const margin = 60;
 			if(!overlap && testObstacle.spriteX > 0 && testObstacle.spriteX < this.width - testObstacle.width
 				&& testObstacle.CY > this.gameTopMargin + margin && testObstacle.CY < this.height - margin) {
 				this.obstacles.push(testObstacle);
