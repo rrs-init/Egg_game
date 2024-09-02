@@ -36,7 +36,10 @@ class Larva {
 			this.delayDelete = true;
 			this.game.removeGameObject();
 			this.game.score++;
-			this.game.particles.push(new Firefly(this.game, this.CX, this.CY, 'red'))
+			for(let i = 0; i < 3; i++) {
+				this.game.particles.push(new Firefly(this.game, this.CX, this.CY, 'yellow'));
+			}
+
 		}
 		collisionObjects.forEach(obj => {
 			let [collision, distance, sumOfRadii, dx, dy] = this.game.checkCollision(this, obj);
