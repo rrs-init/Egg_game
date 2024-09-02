@@ -1,3 +1,4 @@
+import Spark from "./SparkParticle.mjs";
 import Firefly from "./SparkParticle.mjs";
 
 class Larva {
@@ -53,7 +54,11 @@ class Larva {
 		this.game.enemies.forEach(enemy => {
 			if(this.game.checkCollision(this, enemy)[0]) {
 				this.delayDelete = true;
+				for(let i = 0; i < 3; i++) {
+					this.game.particles.push(new Spark(this.game, this.CX, this.CY, 'red'));
+				}
 				this.game.removeGameObject();
+
 				this.game.killed++;
 			}
 		})

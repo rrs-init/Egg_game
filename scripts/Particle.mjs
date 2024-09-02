@@ -3,6 +3,7 @@ class Particle {
 		this.game = game;
 		this.CX = x;
 		this.CY = y;
+		this.CR = 20;
 		this.color = color;
 		this.radius = Math.floor(Math.random() * 10 + 5);
 		this.speedX = Math.random() * 6 - 3;
