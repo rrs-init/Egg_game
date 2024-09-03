@@ -22,6 +22,7 @@ class Game {
 		this.eggInterval = 1000;
 		this.score = 0;
 		this.killed = 0;
+		this.winningScore = 5;
 		this.particles = [];
 		// get canvas offset click.
 		this.mouse = {
@@ -94,8 +95,24 @@ class Game {
 		context.textAlign = 'left';
 		context.fillText('Score: ' + this.score, 25, 50);
 		context.fillText('Lost: ' + this.killed, 25, 70);
-
 		context.restore();
+		if(this.score >= this.winningScore || this.killed >= this.winningScore) {
+			context.save();
+			context.fillStyle = 'rgba(0,0,0,0.5)';
+			context.fillRect(0, 0, this.width, this.height);
+			context.restore();
+			let message = 'shouldn\'t see this'
+			if(this.score >= this.winningScore) {
+				message = 'You Win!';
+			}
+			if(this.killed >= this.winningScore) {
+				message = 'You Lost';
+			}
+			context.font = '130px';
+			context.fillText(message, this.width * 0.5, this.height * 0.5);
+			context.fillText("Final score: " + this.score + ". Press R to try again", this.width * 0.5, this.height * 0.75);
+
+		}
 
 	}
 	checkCollision(a, b) {
@@ -116,6 +133,9 @@ class Game {
 		this.particles = this.particles.filter((p) => {
 			return !p.delayDelete;
 		});
+	}
+	reset() {
+
 	}
 	init() {
 		let attempts = 0;
