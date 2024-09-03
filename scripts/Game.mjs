@@ -14,7 +14,12 @@ class Game {
 		this.gameTopMargin = 230;
 		this.gameObjects = [];
 		this.queue = [];
-
+		this.gameState = {
+			PLAYING: 'playing',
+			PAUSED: 'paused',
+			GAMEOVER: 'gameover'
+		}
+		this.currentState = this.gameState.PLAYING;
 		this.fps = 70;
 		this.timer = 0;
 		this.interval = 1000 / this.fps;
@@ -22,7 +27,7 @@ class Game {
 		this.eggInterval = 1000;
 		this.score = 0;
 		this.killed = 0;
-		this.winningScore = 5;
+		this.winningScore = 10;
 		this.particles = [];
 		// get canvas offset click.
 		this.mouse = {
@@ -69,8 +74,32 @@ class Game {
 	}
 	/**
 	 * @param {HTMLCanvasElement} context
+	 * @param {Number} DT
 	 */
-	render(context, DT) {
+	renderGameOverScreen(context, DT) {
+		context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+		this.gameObjects = [...this.eggs, ...this.obstacles, ...this.enemies, this.player, ...this.larvas, ...this.particles];
+		this.gameObjects.forEach(obj => {
+			obj.draw(context);
+		});
+		context.save();
+		context.fillStyle = 'rgba(0, 0, 0, 0.5)';
+		context.fillRect(0, 0, this.width, this.height);
+		context.restore();
+
+		let message = 'shouldn\'t see this'
+		if(this.score >= this.winningScore) {
+			message = 'You Win!';
+		}
+		if(this.killed >= this.winningScore) {
+			message = 'You Lost';
+		}
+		context.font = '130px';
+		context.fillText(message, this.width * 0.5, this.height * 0.5);
+		context.fillText("Final score: " + this.score + ". Press R to try again", this.width * 0.5, this.height * 0.75);
+
+	}
+	renderGameScreen(context, DT) {
 		if(this.timer > this.interval) {
 			this.timer = 0;
 			context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -97,23 +126,28 @@ class Game {
 		context.fillText('Lost: ' + this.killed, 25, 70);
 		context.restore();
 		if(this.score >= this.winningScore || this.killed >= this.winningScore) {
-			context.save();
-			context.fillStyle = 'rgba(0,0,0,0.5)';
-			context.fillRect(0, 0, this.width, this.height);
-			context.restore();
-			let message = 'shouldn\'t see this'
-			if(this.score >= this.winningScore) {
-				message = 'You Win!';
-			}
-			if(this.killed >= this.winningScore) {
-				message = 'You Lost';
-			}
-			context.font = '130px';
-			context.fillText(message, this.width * 0.5, this.height * 0.5);
-			context.fillText("Final score: " + this.score + ". Press R to try again", this.width * 0.5, this.height * 0.75);
-
+			this.currentState = this.gameState.GAMEOVER;
 		}
 
+	}
+	/**
+	 * @param {HTMLCanvasElement} context
+	 * @param {Number} DT
+	 */
+	render(context, DT) {
+		switch(this.currentState) {
+			case this.gameState.PLAYING:
+				this.renderGameScreen(context, DT);
+				break;
+			case this.gameState.PAUSED:
+				this.renderPauseScreen(context, DT);
+				break;
+			case this.gameState.GAMEOVER:
+				this.renderGameOverScreen(context, DT);
+				break;
+			default:
+				console.error('UNKNOWN GAME STATE HIT');
+		}
 	}
 	checkCollision(a, b) {
 		const dx = a.CX - b.CX;
